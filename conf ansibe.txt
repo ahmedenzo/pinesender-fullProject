@@ -1,0 +1,10 @@
+*****VM pipe******
+sudo -u jenkins -i
+ssh-keygen -t rsa -b 4096
+ssh-copy-id user@vm-web-ip
+ssh user@vm-web-ip
+
+
+
+*****VM cible******
+
