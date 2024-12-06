@@ -316,21 +316,24 @@ loadBankStatistics(bankId: number): void {
       this.overallPinsad = response.totalPins;
       this.overallOtpsad = response.totalOtps;
 
-      // Get today's date in the format 'YYYY-MM-DD'
-      const todayDate = new Date().toISOString().split('T')[0];
+      // Get yesterday's date in the format 'YYYY-MM-DD'
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayDate = yesterday.toISOString().split('T')[0];
+
       this.cdr.detectChanges();
 
-      // Calculate today's total PIN and OTP sends
+      // Calculate yesterday's total PIN and OTP sends
       this.todayPinsad = response.pinsByDate
-        .filter(item => item[0] === todayDate)
-        .reduce((sum, item) => sum + item[1], 0);
+        .filter(item => item[0] === yesterdayDate)  // Filter by yesterday's date
+        .reduce((sum, item) => sum + item[1], 0);   // Sum up the PIN counts for yesterday
 
       this.todayOtpsad = response.otpsByDate
-        .filter(item => item[0] === todayDate)
-        .reduce((sum, item) => sum + item[1], 0);
+        .filter(item => item[0] === yesterdayDate)  // Filter by yesterday's date
+        .reduce((sum, item) => sum + item[1], 0);   // Sum up the OTP counts for yesterday
 
-      console.log('Today’s total Pins for Admin:', this.todayPinsad);
-      console.log('Today’s total OTPs for Admin:', this.todayOtpsad);
+      console.log("Yesterday’s total Pins for Admin:", this.todayPinsad);
+      console.log("Yesterday’s total OTPs for Admin:", this.todayOtpsad);
 
       // Process pins and OTPs grouped by branch (agency)
       const pinsByAgency = response.pinsByBranch;
@@ -374,7 +377,7 @@ loadBankStatistics(bankId: number): void {
         };
       });
 
-      // Sort the agencies by totalOtpSend in descending order
+      // Sort the agencies by totalPinSend in descending order
       this.budgetDetailsadmin.sort((a, b) => b.totalPinSend - a.totalPinSend);
 
       // Store the sorted array for pagination
@@ -383,13 +386,13 @@ loadBankStatistics(bankId: number): void {
       // Paginate the sorted results
       this.paginateadmin();
 
-      console.log('Sorted Agency Budget Details for Admin (Most OTPs First):', this.budgetDetailsadmin);
-      console.log('Color Map:', this.colorMap);
+      console.log("Sorted Agency Budget Details for Admin (Most OTPs First):", this.budgetDetailsadmin);
+      console.log("Color Map:", this.colorMap);
 
       // Trigger change detection manually if using OnPush strategy
       this.cdr.markForCheck();
     },
-    error => console.error('Error fetching bank statistics:', error)
+    error => console.error("Error fetching bank statistics:", error)
   );
 }
 
@@ -536,20 +539,22 @@ loadBankStatistics(bankId: number): void {
         this.overallOtps = response.overallOtps;
 
         // Get today's date in the format 'YYYY-MM-DD'
-        const todayDate = new Date().toISOString().split('T')[0];
-
+      
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayDate = yesterday.toISOString().split('T')[0];
         // Calculate today's total PIN sends
         this.todayPins = response.pinsGroupedByBankAndDate
-            .filter(item => item[0] === todayDate)  // Filter by today's date
+            .filter(item => item[0] === yesterdayDate)  // Filter by today's date
             .reduce((sum, item) => sum + item[3], 0);  // Sum up the PIN counts for today
 
         // Calculate today's total OTP sends
         this.todayOtps = response.otpsGroupedByBankAndDate
-            .filter(item => item[0] === todayDate)  // Filter by today's date
+            .filter(item => item[0] === yesterdayDate)  // Filter by today's date
             .reduce((sum, item) => sum + item[3], 0);  // Sum up the OTP counts for today
 
-        console.log('Today’s total Pins:', this.todayPins);
-        console.log('Today’s total OTPs:', this.todayOtps);
+        console.log('lastday’s total Pins:', this.todayPins);
+        console.log('lastday’s total OTPs:', this.todayOtps);
 
         // Process pins and OTPs grouped by bank
         const pinsByBank = response.pinsGroupedByBank;
@@ -1101,17 +1106,19 @@ loadAgentStatistics(agentId: string): void {
             this.overallPinsAgent = response.totalPins;
             this.overallOtpsAgent = response.totalOtps;
 
-            // Get today's date in the format 'YYYY-MM-DD'
-            const todayDate = new Date().toISOString().split('T')[0];
-
+           
+        
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayDate = yesterday.toISOString().split('T')[0];
             // Calculate today's total PIN sends
             this.todayPinsAgent = response.pinsByDate
-                .filter(item => item[0] === todayDate)
+                .filter(item => item[0] === yesterdayDate)
                 .reduce((sum, item) => sum + item[1], 0);
 
             // Calculate today's total OTP sends
             this.todayOtpsAgent = response.otpsByDate
-                .filter(item => item[0] === todayDate)
+                .filter(item => item[0] === yesterdayDate)
                 .reduce((sum, item) => sum + item[1], 0);
 
             console.log('Today’s total Pins for Agent:', this.todayPinsAgent);

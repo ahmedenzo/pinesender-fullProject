@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-
+import { environment } from '../../../../../../environment.prod';
 import { Client, Message } from '@stomp/stompjs';
 import { MessageResponse } from './MessageResponse';
 
@@ -11,15 +11,15 @@ import { MessageResponse } from './MessageResponse';
 })
 export class CrudService {
 
-  private apiUrl = 'http://localhost:8080/api/otp'; 
-  private apiUrl1 = 'http://localhost:8080/api/cardholders'; // For verifyCardholder
+
+  private apiUrl = environment.apiUrl;
   private stompClient: Client;
   private verificationStatusSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
   constructor(private http: HttpClient) {
     // Create STOMP client for WebSocket communication
     this.stompClient = new Client({
-      brokerURL: 'ws://localhost:8080/ws', // WebSocket URL
+      brokerURL: environment.brokerURL,
       reconnectDelay: 5000, // Automatically attempt reconnect
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
@@ -51,7 +51,7 @@ export class CrudService {
    * @returns Observable<any> - Response from the backend
    */
   verifyCardholder(cardNumber: string, nationalId: string, gsm: string, finalDate: string): Observable<any> {
-    const url = `${this.apiUrl1}/verify`;
+    const url = `${this.apiUrl}/api/cardholders/verify`;
     const body = { cardNumber, nationalId, gsm, finalDate };
 
     // Send HTTP request to initiate cardholder verification
@@ -82,7 +82,7 @@ export class CrudService {
    * @returns Observable<any> - Response from the backend
    */
   validateOtp(phoneNumber: string, otp: string, cardNumber: string): Observable<MessageResponse> {
-    const url = `${this.apiUrl}/validate`;
+    const url = `${this.apiUrl}/api/otp/validate`;
     const body = { phoneNumber, otp, cardNumber };
 
     // Ensure that you're expecting a structured response matching MessageResponse
@@ -99,7 +99,7 @@ export class CrudService {
  * @returns Observable<any> - Response from the backend.
  */
 resendOtp(gsmNumber: string): Observable<any> {
-  const url = `${this.apiUrl}/resend`;
+  const url = `${this.apiUrl}/api/otpresend`;
   const headers = new HttpHeaders({
       'Content-Type': 'text/plain'
   });
